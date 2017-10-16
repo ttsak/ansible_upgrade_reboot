@@ -110,9 +110,12 @@ galaxy_info:
   #  - wheezy
   #
   galaxy_tags:
-    - python
-    - installer
     - system
+    - upgrade
+    - update
+    - packaging
+    - package
+    - packages
   # Below are all categories currently available. Just as with
   # the platforms above, uncomment those that apply to your role.
   #
