@@ -1,0 +1,28 @@
+---
+
+- include: debian.yml
+  when: ansible_os_family == "Debian"
+  
+- include: redhat.yml
+  when: ansible_os_family == "RedHat"
+  
+# Reboot after upgrades is disabled by default
+# To enable it you have to use --extra-vars="reboot_for_upgrades=true"
+- name: Reboot updated system
+  shell: sleep 2 && /sbin/shutdown -r now "Ansible system package upgraded"
+  async: 1
+  poll: 0
+  ignore_errors: true
+  when:
+    - reboot_for_upgrades
+    - reboot_required is defined and reboot_required == true
+
+- name: Waiting 30 secs for host to boot
+  local_action: wait_for host={{ inventory_hostname }} port=22 state=started delay=30 timeout=60
+  become: false
+  when:
+    - reboot_for_upgrades
+    - reboot_required is defined and reboot_required == true
+
+# "set_fact" module allows setting new variables. Variables are set on a host-by-host basis just like facts discovered by the setup module.
+# "async" >0 and "poll" 0 are set for "fire-and-forget" commands
